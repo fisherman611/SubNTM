@@ -1,0 +1,6 @@
+**/__pycache__
+venv
+*.egg-info
+results/
+glove.6B.100d.txt
+wikipedia/
