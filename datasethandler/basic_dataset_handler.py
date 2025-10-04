@@ -227,8 +227,7 @@ class BasicDatasetHandler:
             self.train_dataloader = DataLoader(
                 self.joint_train_dataset,
                 batch_size=batch_size,
-                # shuffle=True,
-                shuffle=False,
+                shuffle=True,
                 num_workers=min(4, os.cpu_count() or 1),
                 persistent_workers=True,
                 pin_memory=True,          # let DataLoader do the pinning
