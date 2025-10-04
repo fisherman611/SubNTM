@@ -14,10 +14,6 @@ RESULT_DIR = 'results'
 DATA_DIR = 'datasets'
 
 if __name__ == "__main__":
-    # try:
-    #     mp.set_start_method("spawn", force=True)
-    # except RuntimeError:
-    #     pass
     parser = config.new_parser()
     config.add_dataset_argument(parser)
     config.add_model_argument(parser)
@@ -43,42 +39,42 @@ if __name__ == "__main__":
     # load a preprocessed dataset
     dataset = datasethandler.BasicDatasetHandler(
         os.path.join(DATA_DIR, args.dataset), device=args.device, read_labels=read_labels,
-        as_tensor=True, contextual_embed=False)
+        as_tensor=True)
 
     # create a model
     pretrainWE = scipy.sparse.load_npz(os.path.join(
         DATA_DIR, args.dataset, "word_embeddings.npz")).toarray()
     
     sub_args = SimpleNamespace(
-        vocab_size=dataset.vocab_size,
-        en1_units=args.en1_units,
-        dropout=args.dropout,
-        embed_size=args.embed_size,
-        num_topic=args.num_topic,
-        adapter_alpha=args.adapter_alpha,
-        beta_temp=args.beta_temp,
-        tau=args.tau,
-        weight_loss_ECR=args.weight_loss_ECR,
-        sinkhorn_alpha=args.sinkhorn_alpha,
-        sinkhorn_max_iter=args.sinkhorn_max_iter,
-        augment_coef=args.augment_coef,
-        word_embeddings=pretrainWE,
-        lambda_doc=args.lambda_doc
+            vocab_size=dataset.vocab_size,
+            en1_units=args.hidden_dim_1,
+            dropout=args.dropout,
+            embed_size=200,
+            num_topic=args.num_topics,
+            max_subdoc=dataset.S_tr,
+            adapter_alpha=args.adapter_alpha,
+            beta_temp=args.beta_temp,
+            weight_loss_ECR=args.weight_ECR,
+            sinkhorn_alpha=20.0,
+            sinkhorn_max_iter=1000,
+            word_embeddings=pretrainWE,
+            lambda_doc = 1.0
     )
-    model = SubNTM(sub_args).cuda() if args.device == 'cuda' else SubNTM(sub_args)
-    # model = torch.compile(model, mode="max-autotune")
+    model = SubNTM(sub_args)
+    model = model.to(args.device)
 
     # create a trainer
     trainer = basic_trainer.BasicTrainer(model, epochs=args.epochs,
-                        learning_rate=args.lr,
-                        batch_size=args.batch_size,
-                        lr_scheduler=args.lr_scheduler,
-                        lr_step_size=args.lr_step_size,
-                        device=args.device)
+                           learning_rate=args.lr,
+                           batch_size=args.batch_size,
+                           lr_scheduler=args.lr_scheduler,
+                           lr_step_size=args.lr_step_size,
+                           device=args.device)
 
 
     # train the model
 
+     # train the model
     trainer.train(dataset)
     # save beta, theta and top words
     beta = trainer.save_beta(current_run_dir)
@@ -87,9 +83,6 @@ if __name__ == "__main__":
     top_words_15 = trainer.save_top_words(
         dataset.vocab, 15, current_run_dir)
 
-    # argmax of train and test theta
-    # train_theta_argmax = train_theta.argmax(axis=1)
-    # test_theta_argmax = test_theta.argmax(axis=1) 
     train_theta_argmax = train_theta.argmax(axis=1)
     unique_elements, counts = np.unique(train_theta_argmax, return_counts=True)
     print(f'train theta argmax: {unique_elements, counts}')
@@ -97,7 +90,7 @@ if __name__ == "__main__":
     test_theta_argmax = test_theta.argmax(axis=1)
     unique_elements, counts = np.unique(test_theta_argmax, return_counts=True)
     print(f'test theta argmax: {unique_elements, counts}')
-    logger.info(f'test theta argmax: {unique_elements, counts}')       
+    logger.info(f'test theta argmax: {unique_elements, counts}')     
 
     # evaluating clustering
     if read_labels:

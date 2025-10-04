@@ -19,7 +19,7 @@ wandb==0.22.1
 
 ## Usage
 To run and evaluate our model for 20NG dataset, run this example:
-> python main.py --dataset 20NG --num_topic 50
+> python main.py --dataset 20NG --num_topics 50
 
 ## Acknowledgement
 Some part of this implementation is based on [TopMost](https://github.com/BobXWu/TopMost). We also utilizes [Palmetto](https://github.com/dice-group/Palmetto) for the evaluation of topic coherence.

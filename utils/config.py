@@ -7,25 +7,39 @@ def new_parser(name=None):
 
 def add_dataset_argument(parser):
     parser.add_argument('--dataset', type=str,
-                        help='dataset name', default='20NG')
+                        help='dataset name', default='YahooAnswers')
+    parser.add_argument('--plm_model', type=str,
+                        help='plm model name', default='all-mpnet-base-v2')
     
 def add_logging_argument(parser):
-    parser.add_argument('--wandb_prj', type=str, default='SubNTM')
+    parser.add_argument('--wandb_prj', type=str, default='topmost')
 
 
 def add_model_argument(parser):
-    parser.add_argument('--en1_units', type=int, default=200)
+    parser.add_argument('--model', type=str, default='ZTM', help='model name')
+    parser.add_argument('--num_topics', type=int, default=50)
+    parser.add_argument('--num_groups', type=int, default=20)
     parser.add_argument('--dropout', type=float, default=0.0)
-    parser.add_argument('--embed_size', type=int, default=200)
-    parser.add_argument('--num_topic', type=int, default=50)
+    parser.add_argument('--hidden_dim_1', type=int, default=200)
+    parser.add_argument('--hidden_dim_2', type=int, default=200)
+    parser.add_argument('--theta_temp', type=float, default=1.0)
     parser.add_argument('--adapter_alpha', type=float, default=0.1)
+    
+    parser.add_argument('--DT_alpha', type=float, default=3.0)
+    parser.add_argument('--TW_alpha', type=float, default=2.0)
+    parser.add_argument('--weight_GR', type=float, default=1.)
+    parser.add_argument('--alpha_GR', type=float, default=5.)
+    parser.add_argument('--weight_InfoNCE', type=float, default=50.)
     parser.add_argument('--beta_temp', type=float, default=0.2)
-    parser.add_argument('--tau', type=float, default=1.0)
-    parser.add_argument('--weight_loss_ECR', type=float, default=200.0)
-    parser.add_argument('--sinkhorn_alpha', type=float, default=20.0)
-    parser.add_argument('--sinkhorn_max_iter', type=int, default=1000)
-    parser.add_argument('--augment_coef', type=float, default=0.0)
-    parser.add_argument('--lambda_doc', type=float, default=1.0)
+    parser.add_argument('--weight_ECR', type=float, default=200.0)
+    parser.add_argument('--use_pretrainWE', action='store_true',
+                        default=False, help='Enable use_pretrainWE mode')
+
+def add_wete_argument(parser):
+    parser.add_argument('--glove', type=str, default='glove.6B.100d.txt', help='embedding model name')
+    parser.add_argument('--wete_beta', type=float, default=0.5)
+    parser.add_argument('--wete_epsilon', type=float, default=0.1)
+    parser.add_argument('--init_alpha', type=bool, default=True)
 
 
 def add_training_argument(parser):
