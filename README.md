@@ -12,6 +12,7 @@ scikit-learn==1.7.0
 gensim==4.3.3
 matplotlib==3.10.6
 wandb==0.22.1
+sentence-transformers==5.1.1
 ```
 2. Install java
 3. Download [this java jar](https://hobbitdata.informatik.uni-leipzig.de/homes/mroeder/palmetto/palmetto-0.1.0-jar-with-dependencies.jar) to ./evaluations/pametto.jar for evaluating
